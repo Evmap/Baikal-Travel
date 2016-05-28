@@ -2,7 +2,7 @@ function init () {
     // Создаем карту с добавленной на нее кнопкой.
     var regenRouteObj = [];
     var placemarks = [];
-    var myMap = new ymaps.Map('map', {
+    window.myMap = new ymaps.Map('map', {
         center: [52.3, 104.284216],
         zoom: 7,
 	controls:['zoomControl']
@@ -14,10 +14,13 @@ function init () {
         options: { selectOnClick: true }
     });
     myMap.controls.add(masstransitButton);
-    
+
     var MRMGarr = [];
     var objects;
     var cho_objects;
+    myMap.events.add('boundschange', function (event) {
+      hotelsFetcher.fetch();
+    });
     // $.getJSON("https://maps.googleapis.com/maps/api/place/textsearch/json?query=cafes+in+Irkutsk&key=AIzaSyAvaYUJnJac1tf4Z8Ps0leCPcAe0RxFoHE",function( data ) {
     // 	objects = data;
     // 	alert(objects.results[0].geometry.location.lng);
@@ -31,7 +34,7 @@ function init () {
             url: query,
             success: function(data) {
 		for(var i = 0; i < placemarks.length; i++) {
-		    myMap.geoObjects.remove(placemarks[i])		    
+		    myMap.geoObjects.remove(placemarks[i])
 		}
 		placemarks = [];
 		objects=data;
@@ -40,7 +43,7 @@ function init () {
 		    var placemark = new ymaps.Placemark([object[i].geometry.location.lat,object[i].geometry.location.lng],{hintContent: object[i].name, balloonContent: object[i].icon});
 		    placemarks.push(placemark);
 		    for(var i = 0; i < placemarks.length; i++) {
-			myMap.geoObjects.add(placemarks[i]);			
+			myMap.geoObjects.add(placemarks[i]);
 		    }
 		}
 	    }
@@ -74,7 +77,7 @@ function init () {
             // см. файл custom_view.js
             new MultiRouteCustomView(multiRouteModel);
 	});
-	
+
 	// Создаем на основе существующей модели мультимаршрут.
 	var multiRoute = new ymaps.multiRouter.MultiRoute(multiRouteModel, {
             // Путевые точки можно перетаскивать.
@@ -97,12 +100,14 @@ function init () {
 	for(var i = 0, l = object.length; i < l; i++) {
 	    if (object[i].id == id) {
 		MRMGarr.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
-	    }	
+	    }
 	}
 	myMap.geoObjects.remove(regenRouteObj);
 	regenRouteObj = regenRoute(MRMGarr);
 	myMap.geoObjects.add(regenRouteObj);
     });
+
+  hotelsFetcher.fetch();
 }
 
 ymaps.ready(init);
