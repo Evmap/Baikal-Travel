@@ -18,7 +18,7 @@ $(document).ready(function(){
                     var types = value.types;
 
                     item_head.append(
-                        '<li class="item" id='+id+'><a href="#" class="row" id=>'+id+'\
+                        '<li class="item" id='+id+'><a href="#" class="row" id='+id+'>\
                             <img src='+img_src+' class="col-md-4 pull-left">\
                                 <h5>'+name+'</h5>\
                             </img>\

@@ -1,78 +1,88 @@
-$(document).ready(function(){
-    ymaps.ready(init);
-    var objects = '{ \
-"content":[ \
-{"type": "sight", "description": "Московские ворота", "img_url": "http://www.irkutsk.lusya.com/upload/catalog/ru/3496/13223927455.jpg","address": "a","longitude" : 52.293558, "latitude" : 104.28617}, \
-{"type": "sight", "description": "Собор Богоявления Господня", "img_url": "https://media-cdn.tripadvisor.com/media/photo-p/0b/65/3d/fc/photo1jpg.jpg", "address": "f","longitude" :52.292313, "latitude" : 104.282678}, \
-{"type": "museum", "description": "Иркутский Краеведческий музей", "img_url": "https://media-cdn.tripadvisor.com/media/photo-s/07/c1/01/00/caption.jpg","address": "f", "longitude" :52.281766, "latitude" : 104.284216}\
-]\
-}';
-    objects = JSON.parse(objects);
-    
-    var myMap;
-    var routeTool =true;
-    function init(){     
-	myMap = new ymaps.Map("map", {
-            center: [52.3, 104.3],
-            zoom:13
-	});
-	// ymaps.route([
-	//     'Иркутск, Карла Маркса, 1',
-	//     'улица Советская, 1, Россия, Иркутск'// или [59.956084, 30.356849]
-	// ],{
-	//     multiRoute: true,
-	//     routingMode:"masstransit"}).then(
-	// 	function (route) {
-	// 	    myMap.geoObjects.add(route);
-	// 	    alert(route.getHumanJamsTime());
-	// 	},
-	// 	function (error) {
-	// 	    alert("Возникла ошибка: " + error.message);
-	// 	}
-	//     );
-    };
-    
-    $("#l1").click(function(){
-	var myPlacemark0 = new ymaps.Placemark([objects.content[0].longitude, objects.content[0].latitude], { hintContent: objects.content[0].description, balloonContent: objects.content[0].description + '<img style = "width:100px;" src = "'+objects.content[0].img_url + '">' });
-	if (routeTool == true){	    
-	    myMap.geoObjects.add(myPlacemark0);    
-	};
+function init () {
+    // Создаем карту с добавленной на нее кнопкой.
+    var myMap = new ymaps.Map('map', {
+        center: [52.3, 104.284216],
+        zoom: 7
+    }, {
+        buttonMaxWidth: 300
     });
-
-    $("#l2").click(function(){
-	var myPlacemark1 = new ymaps.Placemark([objects.content[1].longitude, objects.content[1].latitude], { hintContent: objects.content[1].description, balloonContent: objects.content[1].description + '<img style = "width:100px;" src = "'+objects.content[1].img_url + '">' });
-	if (routeTool == true){
-	    myMap.geoObjects.add(myPlacemark1);
-	};
-    });
-
-    $("#l3").click(function(){
-	var myPlacemark2 = new ymaps.Placemark([objects.content[2].longitude, objects.content[2].latitude], { hintContent: objects.content[2].description, balloonContent: objects.content[2].description + '<img style = "width:100px;" src = "'+objects.content[2].img_url + '">' });
-	if (routeTool == true){
-	    myMap.geoObjects.add(myPlacemark2);  
-	};
-    });
-
-    $("#l4").click(function(){
-	ymaps.route([
-	    [objects.content[0].longitude,objects.content[0].latitude],
-	    [objects.content[1].longitude,objects.content[1].latitude],
-	    [objects.content[2].longitude,objects.content[2].latitude]
-	],{
-	    multiRoute: true,
-	    routingMode:"masstransit"}).then(
-		function (route) {
-		    myMap.geoObjects.add(route);
-		},
-		function (error) {
-		    alert("Возникла ошибка: " + error.message);
+    var MRMGarr = [];
+    var objects;
+    var cho_objects;
+    // $.getJSON("https://maps.googleapis.com/maps/api/place/textsearch/json?query=cafes+in+Irkutsk&key=AIzaSyAvaYUJnJac1tf4Z8Ps0leCPcAe0RxFoHE",function( data ) {
+    // 	objects = data;
+    // 	alert(objects.results[0].geometry.location.lng);
+    // });
+    $(".btn-primary").click(function(){
+        var query = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="+
+            $("input").val()+"&key=AIzaSyAvaYUJnJac1tf4Z8Ps0leCPcAe0RxFoHE";
+        $.ajax({
+            dataType: "json",
+            async: false,
+            url: query,
+            success: function(data) {
+		objects=data;
+		var object = objects.results;
+		var MRMGarr = [];
+		for(var i = 0, l = object.length; i < l; i++) {
+		    MRMGarr.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
 		}
-	    );
-	if (routeTool == true) {
-	    routeTool = false;
-	}
-	else{
-	    routeTool = true;    
-	};
+	    }
+        });
     });
-});
+
+
+    function regenRoute(objects){
+	// Создаем модель мультимаршрута.
+	var multiRouteModel = new ymaps.multiRouter.MultiRouteModel(objects, {
+            // Маршрут при этом будет перестраиваться.
+            boundsAutoApply: true
+	});
+
+	// Создаем кнопку, переключающую модель в режим
+	// маршрутизации на общественном транспорте.
+	var masstransitButton = new ymaps.control.Button({
+            data: { content: "На общественном транспорте"},
+            options: { selectOnClick: true }
+	});
+
+	// Объявляем обработчики для кнопки.
+	masstransitButton.events.add('select', function () {
+            multiRouteModel.setParams({ routingMode: 'masstransit' }, true);
+	});
+
+	masstransitButton.events.add('deselect', function () {
+            multiRouteModel.setParams({ routingMode: 'auto' }, true);
+	});
+
+	myMap.controls = [masstransitButton];
+	ymaps.modules.require([
+            'MultiRouteCustomView'
+	], function (MultiRouteCustomView) {
+            // Создаем экземпляр текстового отображения модели мультимаршрута.
+            // см. файл custom_view.js
+            new MultiRouteCustomView(multiRouteModel);
+	});
+
+	// Создаем на основе существующей модели мультимаршрут.
+	var multiRoute = new ymaps.multiRouter.MultiRoute(multiRouteModel, {
+            // Путевые точки можно перетаскивать.
+            // Маршрут при этом будет перестраиваться.
+            boundsAutoApply: true
+	});
+	return multiRoute;
+    };
+
+    $(document).on('click', '.item', function(){
+	var id = $( this ).attr('id');
+	var object = objects.results;
+	for(var i = 0, l = object.length; i < l; i++) {
+	    if (object[i].id == id) {
+		MRMGarr.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
+	    }	
+	}
+	myMap.geoObjects.add(regenRoute(MRMGarr));
+    });
+}
+
+ymaps.ready(init);
