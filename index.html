@@ -2,22 +2,122 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Document</title>
+        <!-- Bootstrap Core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="css/sidebar.css" rel="stylesheet">
+        <link href="css/map.css" rel="stylesheet">
+        <link href="css/search.css" rel="stylesheet">
     </head>
-    <body>
+    <body data-spy="scroll" data-target=".scrollable" data-offset="50">
 	<div style="position: absolute;">
-	    <ul>
-		<li id="l1">1</li>
-		<li id="l2">2</li>
-		<li id="l3">3</li>
-		<li id="l4">routeTool</li>
-	    </ul>
-	</div>
-	<div id="map" style="right:0; width:70%; height:100%; position:absolute;"></div>
+        <div id="wrapper">
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper">
+                <ul class="sidebar-nav">
+                    <div class="input-group" id="adv-search">
+                        <input type="text" class="form-control" placeholder="Поиск..." />
+                        <div class="input-group-btn">
+                            <div class="btn-group" role="group">
+                                <div class="dropdown dropdown-lg">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                                    <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <form class="form-horizontal" role="form">
+                                          <div class="form-group">
+                                            <label for="filter">Сортировать по</label>
+                                            <select class="form-control">
+                                                <option value="0" selected>Популярности</option>
+                                                <option value="1">Цене</option>
+                                            </select>
+                                          </div>
+                                          <div class="form-group">
+                                            <label for="filter">Категория</label>
+                                            <select class="form-control">
+                                                <option value="0" selected>Кафе/рестораны</option>
+                                                <option value="1">Музеи</option>
+                                            </select>
+                                          </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommend scrollable">
+                        <h2>Рекомендуемые</h2>
+                        <li>
+                            <a href="#" class="row">
+                                <img src="http://www.irkutsk.lusya.com/upload/catalog/ru/3496/13223927455.jpg" class="col-md-4 pull-left">
+                                    <h5>Place1</h5>
+                                </img>
+                                <p class="col-md-8">For example, when throwing two dice, the outcome of any particular roll is unpredictable, but a sum of 7 will occur twice as often as 4.</p>
+                                
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="row">
+                                <img src="https://media-cdn.tripadvisor.com/media/photo-p/0b/65/3d/fc/photo1jpg.jpg" class="col-md-4 pull-left">
+                                    <h5>Place2</h5>
+                                </img>
+                                <p class="col-md-8">For example, with a bowl containing just 10 red marbles and 90 blue marbles, a random selection mechanism would choose a red marble with probability 1/10.
+                                <button type="button" class="btn btn-success">Показать цены</button></p>
+                            </a>
+                        </li>
+                    </div>
+                    <div class="search-result scrollable">
+                        <h2>Результаты поиска</h2>
+                        <li>
+                            <a href="#" class="row">
+                                <img src="https://media-cdn.tripadvisor.com/media/photo-s/07/c1/01/00/caption.jpg" class="col-md-4 pull-left">
+                                    <h5>Place3</h5>
+                                </img>
+                                <p class="col-md-8">In ancient history, the concepts of chance and randomness were intertwined with that of fate. Many ancient peoples threw dice to determine fate, and this later evolved into games of chance.</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="row">
+                                <img src="https://img-fotki.yandex.ru/get/9253/207615507.2aa/0_efb29_3361d6b3_XL" class="col-md-4 pull-left">
+                                    <h5>Place4</h5>
+                                </img>
+                                <p class="col-md-8">The Logic of Chance John Venn wrote a chapter on The conception of randomness that included his view of the randomness of the digits of the</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="row">
+                                <img src="https://img-fotki.yandex.ru/get/27002/370901803.3e/0_18de0c_e1e66c97_XL" class="col-md-4 pull-left">
+                                    <h5>Place5</h5>
+                                </img>
+                                <p class="col-md-8">The early part of the 20th century saw a rapid growth in the formal analysis of randomness, as various approaches to the mathematical foundations of probability were introduced.</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="row">
+                                <img src="https://img-fotki.yandex.ru/get/26827/221602462.399/0_15ce2e_46888f7c_XXXL" class="col-md-4 pull-left">
+                                    <h5>Place6</h5>
+                                </img>
+                                <p class="col-md-8">In the 19th century, scientists used the idea of random motions of molecules in the development of statistical mechanics to explain phenomena in thermodynamics and the properties of gases.</p>
+                            </a>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+            <!-- /#sidebar-wrapper -->
+        </div>
+
+        <div id="map"></div>
+
+    </div>
+    <!-- /#wrapper -->
+
 	<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 	<script src="js/jquery.js"></script>
 	<script src="js/bootstrap.js"></script>
 	<script src="js/map.js"></script>
+
     </body>
 
 </html>
