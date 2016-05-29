@@ -38,11 +38,7 @@ var hotelsList = {
       hotel = hotels[i];
       var id = hotel.id;
       if(!hotels[hotel.id]){
-        myMap.geoObjects.add(new ymaps.GeoObject({
-            geometry: {
-            type: "Point",
-           coordinates: [hotel.lat, hotel.lon]
-        }}));
+        myMap.geoObjects.add(new ymaps.Placemark([hotel.lat, hotel.lon]));
 
         // DG.marker([hotel.lat, hotel.lon],{icon: hotelIcon}).addTo(map).bindPopup('<img src="https://photo.hotellook.com/image_v2/crop/h' + hotel.id + '/120.auto" width="60px" height="60px"/><a href="https://hotellook.com' + hotel.link + '?locale=ru&marker=00001" target="_blank" style="color: #fff;">Забронировать</a>');
         this.hotels[hotel.id] = hotel;
