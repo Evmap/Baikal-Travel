@@ -50,11 +50,10 @@ ymaps.modules.define('MultiRouteCustomView', [
         },
 
         processInit: function () {
-            return "Инициализация ...";
+	    // $("#viewContainer").empty();
         },
 
         processRequestSend: function () {
-            return "Запрос данных ...";
         },
 
         processSuccessRequest: function (multiRouteModel, e) {

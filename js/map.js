@@ -30,7 +30,7 @@ function init () {
     var objects;
     var cho_objects;
     myMap.events.add('boundschange', function (event) {
-      hotelsFetcher.fetch();
+	hotelsFetcher.fetch();
     });
     // $.getJSON("https://maps.googleapis.com/maps/api/place/textsearch/json?query=cafes+in+Irkutsk&key=AIzaSyAvaYUJnJac1tf4Z8Ps0leCPcAe0RxFoHE",function( data ) {
     // 	objects = data;
@@ -51,7 +51,7 @@ function init () {
 		objects=data;
 		var object = objects.results;
 		for(var i = 0, l = object.length; i < l; i++) {
-		    var placemark = new ymaps.Placemark([object[i].geometry.location.lat,object[i].geometry.location.lng],{hintContent: object[i].name, balloonContent: object[i].icon});
+		    var placemark = new ymaps.Placemark([object[i].geometry.location.lat,object[i].geometry.location.lng],{            iconContent: '1',hintContent: object[i].name, balloonContent: object[i].icon});
 		    placemarks.push(placemark);
 		    for(var i = 0; i < placemarks.length; i++) {
 			myMap.geoObjects.add(placemarks[i]);
@@ -81,36 +81,42 @@ function init () {
             multiRouteModel.setParams({ routingMode: 'auto' }, true);
 	});
 
-    hotelButton.events.add('select', function () {
-        var x = 0;
-        var y = 0;
-        
-        for (var i = 0; i < activeMarks.length; i++) {
-            x += activeMarks[i][0];
-            y += activeMarks[i][1];
-        };
-
-        x /= activeMarks.length;
-        y /= activeMarks.length;
-
-        for (var hotelId in hotelsList.hotels) {
-            var hotel = hotelsList.hotels[hotelId];
-            var dist = Math.pow(x - hotel.lat, 2) + Math.pow(y - hotel.lon, 2);
+	hotelButton.events.add('select', function () {
+            var x = 0;
+            var y = 0;
             
-            if (hotelRadius > dist) {
-                var mark = new ymaps.Placemark([hotel.lat, hotel.lon], { draggable: 0 });
-                myMap.geoObjects.add(mark);
-                hotelmarks.push(mark);
-            }
-        };
-    });
+            for (var i = 0; i < activeMarks.length; i++) {
+		x += activeMarks[i][0];
+		y += activeMarks[i][1];
+            };
 
-    hotelButton.events.add('deselect', function () {
-        for(var i = 0; i < hotelmarks.length; i++) {
-            myMap.geoObjects.remove(hotelmarks[i])
-        }
-        hotelmarks = [];
-    });
+            x /= activeMarks.length;
+            y /= activeMarks.length;
+
+            for (var hotelId in hotelsList.hotels) {
+		var hotel = hotelsList.hotels[hotelId];
+		var dist = Math.pow(x - hotel.lat, 2) + Math.pow(y - hotel.lon, 2);
+		
+		if (hotelRadius > dist) {
+                    var mark = new ymaps.Placemark([hotel.lat, hotel.lon],{
+			balloonContent:'<img src = "home.png">',
+			draggable: 0
+		    },{
+			            iconLayout: 'default#image',
+			iconImageHref: 'home.png'
+		    });
+                    myMap.geoObjects.add(mark);
+                    hotelmarks.push(mark);
+		}
+            };
+	});
+
+	hotelButton.events.add('deselect', function () {
+            for(var i = 0; i < hotelmarks.length; i++) {
+		myMap.geoObjects.remove(hotelmarks[i])
+            }
+            hotelmarks = [];
+	});
 
 
 	ymaps.modules.require([
@@ -132,19 +138,20 @@ function init () {
 
     $(document).on('click', '.ymaps-2-1-39-route-pin', function(){
 	MRMGarr.pop();
-    activeMarks.pop();
+	activeMarks.pop();
 	myMap.geoObjects.remove(regenRouteObj);
 	regenRouteObj = regenRoute(MRMGarr);
 	myMap.geoObjects.add(regenRouteObj);
     });
 
     $(document).on('click', '.item', function(){
+	$("#viewContainer").empty();
 	var id = $( this ).attr('id');
 	var object = objects.results;
 	for(var i = 0, l = object.length; i < l; i++) {
 	    if (object[i].id == id) {
 		MRMGarr.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
-        activeMarks.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
+		activeMarks.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
 	    }
 	}
 	myMap.geoObjects.remove(regenRouteObj);
@@ -152,7 +159,7 @@ function init () {
 	myMap.geoObjects.add(regenRouteObj);
     });
 
-  hotelsFetcher.fetch();
+    hotelsFetcher.fetch();
 }
 
 ymaps.ready(init);
