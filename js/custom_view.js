@@ -84,18 +84,19 @@ ymaps.modules.define('MultiRouteCustomView', [
         processDrivingRoute: function (route) {
             var result = ["Автомобильный маршрут."];
             result.push(this.createCommonRouteOutput(route));
-            return result.join("<br/>");
         },
 
         processMasstransitRoute: function (route) {
             var result = ["Маршрут на общественном транспорте."];
             result.push(this.createCommonRouteOutput(route));
             result.push("Описание маршута: <ul>" + this.createMasstransitRouteOutput(route) + "</ul>");
-            return result.join("<br/>");
         },
 
         // Метод формирующий общую часть описания для обоих типов маршрутов.
         createCommonRouteOutput: function (route) {
+	    if (route.properties.get("duration").text.length>9){
+		alert();
+	    }
             return "Протяженность маршрута: " + route.properties.get("distance").text + "<br/>" +
                 "Время в пути: " + route.properties.get("duration").text;
         },

@@ -1,0 +1,7 @@
+#viewContainer {
+    width: 100px;
+    background-color: aqua;
+    position: absolute;
+    right:0;
+    z-index: 2000;
+}
