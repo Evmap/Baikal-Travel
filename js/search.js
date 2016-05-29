@@ -1,8 +1,9 @@
 $(document).ready(function(){
     $(".btn-primary").click(function(){
+        var category = $("option:selected").text();
 	var query2 = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+object[i]..geometry.location.lat+'&radius='+object[i].geometry.location.lng+'&key=AIzaSyCph9jxnUXoZ_d6p0lzFG1Ihr-ZEU8WHQk";
         var query = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="+
-            $("input").val()+"&key=AIzaSyCph9jxnUXoZ_d6p0lzFG1Ihr-ZEU8WHQk";
+            category+"+Иркутск&key=AIzaSyCph9jxnUXoZ_d6p0lzFG1Ihr-ZEU8WHQk";
         $.ajax({
             dataType: "json",
             async: false,

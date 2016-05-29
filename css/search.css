@@ -1,3 +1,14 @@
+#slider-group {
+    width: 50%;
+    margin: 0 auto;
+}
+
+#slider {
+    width: 250px%;
+}
+
+
+
 .dropdown.dropdown-lg .dropdown-menu {
     margin-top: -1px;
     padding: 6px 20px;

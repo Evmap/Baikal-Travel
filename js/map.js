@@ -37,8 +37,9 @@ function init () {
     // 	alert(objects.results[0].geometry.location.lng);
     // });
     $(".btn-primary").click(function(){
+        var category = $("option:selected").text();
         var query = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="+
-            $("input").val()+"&key=AIzaSyDzfijuIvyEJlnKJhgS__3EX9tjKMMkXZ8";
+            category+"+Иркутск&key=AIzaSyDzfijuIvyEJlnKJhgS__3EX9tjKMMkXZ8";
         $.ajax({
             dataType: "json",
             async: false,
@@ -82,33 +83,29 @@ function init () {
 	});
 
 	hotelButton.events.add('select', function () {
-            var x = 0;
-            var y = 0;
+        var x = 0;
+        var y = 0;
+        var price_low = $( "#slider" ).slider( "values", 0 );
+        var price_high = $( "#slider" ).slider( "values", 1 );
+        
+        for (var i = 0; i < activeMarks.length; i++) {
+            x += activeMarks[i][0];
+            y += activeMarks[i][1];
+        };
+
+        x /= activeMarks.length;
+        y /= activeMarks.length;
+
+        for (var hotelId in hotelsList.hotels) {
+            var hotel = hotelsList.hotels[hotelId];
+            var dist = Math.pow(x - hotel.lat, 2) + Math.pow(y - hotel.lon, 2);
             
-            for (var i = 0; i < activeMarks.length; i++) {
-		x += activeMarks[i][0];
-		y += activeMarks[i][1];
-            };
-
-            x /= activeMarks.length;
-            y /= activeMarks.length;
-
-            for (var hotelId in hotelsList.hotels) {
-		var hotel = hotelsList.hotels[hotelId];
-		var dist = Math.pow(x - hotel.lat, 2) + Math.pow(y - hotel.lon, 2);
-		
-		if (hotelRadius > dist) {
-                    var mark = new ymaps.Placemark([hotel.lat, hotel.lon],{
-			balloonContent:'<img src = "home.png">',
-			draggable: 0
-		    },{
-			            iconLayout: 'default#image',
-			iconImageHref: 'home.png'
-		    });
-                    myMap.geoObjects.add(mark);
-                    hotelmarks.push(mark);
-		}
-            };
+            if (hotelRadius > dist && hotel.price_from >= price_low && hotel.price_from <= price_high) {
+                var mark = new ymaps.Placemark([hotel.lat, hotel.lon], { draggable: 0 });
+                myMap.geoObjects.add(mark);
+                hotelmarks.push(mark);
+            }
+        };
 	});
 
 	hotelButton.events.add('deselect', function () {
