@@ -2,6 +2,10 @@ function init () {
     // Создаем карту с добавленной на нее кнопкой.
     var regenRouteObj = [];
     var placemarks = [];
+    var activeMarks = [];
+    var hotelmarks = [];
+    var hotelRadius = 0.0001;
+
     window.myMap = new ymaps.Map('map', {
         center: [52.3, 104.284216],
         zoom: 7,
@@ -9,6 +13,13 @@ function init () {
     }, {
         buttonMaxWidth: 300
     });
+
+    var hotelButton = new ymaps.control.Button({
+        data: { content: "Показать ближайшие отели"},
+        options: { selectOnClick: true }
+    });
+    myMap.controls.add(hotelButton);
+
     var masstransitButton = new ymaps.control.Button({
         data: { content: "На общественном транспорте"},
         options: { selectOnClick: true }
@@ -27,7 +38,7 @@ function init () {
     // });
     $(".btn-primary").click(function(){
         var query = "https://maps.googleapis.com/maps/api/place/textsearch/json?query="+
-            $("input").val()+"&key=AIzaSyCph9jxnUXoZ_d6p0lzFG1Ihr-ZEU8WHQk";
+            $("input").val()+"&key=AIzaSyDzfijuIvyEJlnKJhgS__3EX9tjKMMkXZ8";
         $.ajax({
             dataType: "json",
             async: false,
@@ -70,6 +81,38 @@ function init () {
             multiRouteModel.setParams({ routingMode: 'auto' }, true);
 	});
 
+    hotelButton.events.add('select', function () {
+        var x = 0;
+        var y = 0;
+        
+        for (var i = 0; i < activeMarks.length; i++) {
+            x += activeMarks[i][0];
+            y += activeMarks[i][1];
+        };
+
+        x /= activeMarks.length;
+        y /= activeMarks.length;
+
+        for (var hotelId in hotelsList.hotels) {
+            var hotel = hotelsList.hotels[hotelId];
+            var dist = Math.pow(x - hotel.lat, 2) + Math.pow(y - hotel.lon, 2);
+            
+            if (hotelRadius > dist) {
+                var mark = new ymaps.Placemark([hotel.lat, hotel.lon], { draggable: 0 });
+                myMap.geoObjects.add(mark);
+                hotelmarks.push(mark);
+            }
+        };
+    });
+
+    hotelButton.events.add('deselect', function () {
+        for(var i = 0; i < hotelmarks.length; i++) {
+            myMap.geoObjects.remove(hotelmarks[i])
+        }
+        hotelmarks = [];
+    });
+
+
 	ymaps.modules.require([
             'MultiRouteCustomView'
 	], function (MultiRouteCustomView) {
@@ -89,6 +132,7 @@ function init () {
 
     $(document).on('click', '.ymaps-2-1-39-route-pin', function(){
 	MRMGarr.pop();
+    activeMarks.pop();
 	myMap.geoObjects.remove(regenRouteObj);
 	regenRouteObj = regenRoute(MRMGarr);
 	myMap.geoObjects.add(regenRouteObj);
@@ -100,6 +144,7 @@ function init () {
 	for(var i = 0, l = object.length; i < l; i++) {
 	    if (object[i].id == id) {
 		MRMGarr.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
+        activeMarks.push([object[i].geometry.location.lat,object[i].geometry.location.lng]);
 	    }
 	}
 	myMap.geoObjects.remove(regenRouteObj);
